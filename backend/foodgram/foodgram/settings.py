@@ -118,24 +118,27 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_PAGINATION_CLASS': 'api.paginations.PageSizeLimitPagination',
-#     'PAGE_SIZE': 6,
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.PageSizeLimitPagination',
+    'PAGE_SIZE': 6,
+}
 
-# DJOSER = {
-#     'LOGIN_FIELD': 'email',
-#     'HIDE_USERS': False,
-#     'SERIALIZERS': {
-#         'user_create': 'api.serializers.UserSignUpSerializer',
-#         'user': 'api.serializers.UserGetSerializer',
-#         'current_user': 'api.serializers.UserGetSerializer',
-#     },
-#     'PERMISSIONS': {
-#         'user_list': ['rest_framework.permissions.AllowAny'],
-#         'user': ['rest_framework.permissions.AllowAny'],
-#     },
-# }
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.UserSignUpSerializer',
+        'user': 'api.serializers.UserGetSerializer',
+        'current_user': 'api.serializers.UserGetSerializer',
+    },
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.AllowAny'],
+    },
+}
