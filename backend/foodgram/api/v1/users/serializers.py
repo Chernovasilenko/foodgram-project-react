@@ -4,9 +4,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
-from api.v1.recipes.serializers import RecipeShortSerializer
 from users.models import Subscribe
-
+from recipes.models import Recipe, FavoriteRecipe, ShoppingCart
 
 User = get_user_model()
 
@@ -80,6 +79,55 @@ class UserSubscribeSerializer(serializers.ModelSerializer):
         return UserSubscribeRepresentSerializer(
             instance.author, context={'request': request}
         ).data
+
+
+class RecipeShortSerializer(serializers.ModelSerializer):
+    """Сериализатор краткой информации о рецепте в профиле."""
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор избранных рецептов пользователя."""
+
+    class Meta:
+        model = FavoriteRecipe
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=['user', 'recipe'],
+                message='Рецепт уже находится в избранном',
+            )
+        ]
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return RecipeShortSerializer(
+            instance.recipe, context={'request': request}
+        ).data
+
+
+class ShoppingCartSerializer(FavoriteSerializer):
+    """Сериализатор списка покупок пользователя."""
+
+    class Meta:
+        model = ShoppingCart
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=['user', 'recipe'],
+                message='Рецепт уже добавлен в список покупок',
+            )
+        ]
 
 
 class UserSubscribeRepresentSerializer(UserGetSerializer):

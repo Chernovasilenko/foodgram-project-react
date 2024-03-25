@@ -19,9 +19,9 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user_from', 'user_to', 'created')
-    search_fields = ('user_from', 'user_to')
-    list_filter = ('user_from', 'user_to')
+    list_display = ('id', 'user', 'author', 'created')
+    search_fields = ('user', 'author')
+    list_filter = ('user', 'author')
 
 
 admin.site.site_title = 'Административный сайт Foodgram'

@@ -19,7 +19,7 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     """Администрирование ингридиентов."""
 
-    list_display = ('id', 'name', 'unit')
+    list_display = ('id', 'name', 'measurement_unit')
     search_fields = ('name',)
     list_filter = ('name',)
     list_display_links = ('name',)
@@ -39,7 +39,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags')
     list_display_links = ('name',)
     inlines = (RecipeIngredientInline,)
-    readonly_fields = ['favorites_amount']
+    readonly_fields = ('favorites_amount',)
 
     @admin.display(description='Добавлено в избранное')
     def favorites_amount(self, obj):

@@ -40,13 +40,13 @@ class User(AbstractUser):
 class Subscribe(models.Model):
     """Модель взаимосвязи пользователей."""
 
-    user_from = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         verbose_name='Подписчик',
         on_delete=models.CASCADE,
         related_name='follower'
     )
-    user_to = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         verbose_name='Автор',
         on_delete=models.CASCADE,
@@ -66,10 +66,10 @@ class Subscribe(models.Model):
         ordering = ('-created',)
         constraints = (
             models.UniqueConstraint(
-                fields=('user_from', 'user_to'),
+                fields=('user', 'author'),
                 name='unique_user_author',
             ),
         )
 
     def __str__(self):
-        return f'{self.user_from} подписан на {self.user_to}'
+        return f'{self.user} подписан на {self.author}'

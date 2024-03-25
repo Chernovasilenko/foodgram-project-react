@@ -1,23 +1,13 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+# from rest_framework.validators import UniqueTogetherValidator
 
+from api.v1.recipes.fields import Base64ImageField
 from api.v1.users.serializers import UserGetSerializer
 from core import constants as const
 from recipes.models import (
     FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 )
-
-
-class RecipeShortSerializer(serializers.ModelSerializer):
-    """Сериализатор краткой информации о рецепте."""
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time',
-        )
 
 
 class TagGetSerializer(serializers.ModelSerializer):
@@ -120,3 +110,95 @@ class IngredientPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'amount')
+
+
+class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор создания рецептов."""
+
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+    )
+    ingredients = IngredientPostSerializer(
+        many=True,
+        source='recipe_ingredients',
+    )
+    image = Base64ImageField()
+    cooking_time = serializers.IntegerField(
+        min_value=const.MIN_VALUE,
+        max_value=const.MAX_VALUE,
+    )
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'tags',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        )
+
+    def validate(self, data):
+        """Проверяет заполнение полей ингридиентов и тегов."""
+        if not self.initial_data.get('ingredients'):
+            raise ValidationError('В рецепте должны быть ингридиенты!')
+        if not self.initial_data.get("tags"):
+            raise ValidationError('В рецепте должен быть минимум один тег!')
+        return data
+
+    def validate_ingredients(self, ingredients):
+        """Проверяет правильность заполнения поля с ингридиентами."""
+        ingredients_list = []
+        for item in ingredients:
+            try:
+                ingredient = Ingredient.objects.get(id=item['id'])
+            except Ingredient.DoesNotExist:
+                raise ValidationError('Указан несуществующий ингредиент!')
+
+            if ingredient in ingredients_list:
+                raise ValidationError('Ингредиенты не могут повторяться!')
+            ingredients_list.append(ingredient)
+        return ingredients
+
+    def validate_tags(self, tags):
+        """Проверяет правильность заполнения поля с тегами."""
+        if len(set(tags)) != len(tags):
+            raise ValidationError('Теги должны быть уникальными!')
+        return tags
+
+    def add_ingredients(self, ingredients, recipe):
+        """Добавляет ингредиенты."""
+        ingredient_list = [
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=Ingredient.objects.get(id=ingredient.get('id')),
+                amount=ingredient.get('amount'),
+            )
+            for ingredient in ingredients
+        ]
+        RecipeIngredient.objects.bulk_create(ingredient_list)
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        ingredients = validated_data.pop('recipe_ingredients')
+        tags = validated_data.pop('tags')
+        recipe = Recipe.objects.create(author=request.user, **validated_data)
+        recipe.tags.set(tags)
+        self.add_ingredients(ingredients, recipe)
+        return recipe
+
+    def update(self, instance, validated_data):
+        ingredients = validated_data.pop('recipe_ingredients')
+        tags = validated_data.pop('tags')
+        instance.tags.clear()
+        instance.tags.set(tags)
+        RecipeIngredient.objects.filter(recipe=instance).delete()
+        super().update(instance, validated_data)
+        self.add_ingredients(ingredients, instance)
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        return RecipeGetSerializer(instance, context=self.context).data
