@@ -118,6 +118,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'
 
+API_VER = 'v1'
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -125,7 +127,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.PageSizeLimitPagination',
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.PageSizePagination',
     'PAGE_SIZE': 6,
 }
 
@@ -133,9 +135,9 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserSignUpSerializer',
-        'user': 'api.serializers.UserGetSerializer',
-        'current_user': 'api.serializers.UserGetSerializer',
+        'user_create': f'api.{API_VER}.users.serializers.UserSignUpSerializer',
+        'user': f'api.{API_VER}.users.serializers.UserGetSerializer',
+        'current_user': f'api.{API_VER}.users.serializers.UserGetSerializer',
     },
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],

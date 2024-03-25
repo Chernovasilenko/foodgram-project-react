@@ -1,7 +1,9 @@
 from django.urls import include, path
 
+from foodgram.settings import API_VER
+
 app_name = 'api'
 
 urlpatterns = [
-    path('v1/', include('api.v1.urls')),
+    path(f'{API_VER}/', include('api.v1.urls')),
 ]

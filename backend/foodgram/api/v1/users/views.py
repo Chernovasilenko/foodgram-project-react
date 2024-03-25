@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.v1.permissions import IsAdminOrAuthorOrReadOnly
-from users.serializers import (
+from api.v1.users.serializers import (
     UserSubscribeSerializer, UserSubscribeRepresentSerializer
 )
 

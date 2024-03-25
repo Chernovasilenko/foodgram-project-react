@@ -16,4 +16,4 @@ MIN_VALUE = 1
 
 MIN_VALUE_MSG = 'Значение этого поля должно быть больше 1.'
 
-MAX_VALUE = 10
+MAX_VALUE = 32000
