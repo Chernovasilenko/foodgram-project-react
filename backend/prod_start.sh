@@ -1,9 +1,7 @@
 #!/bin/bash
-python manage.py flush
 
-ADMIN_USERNAME=admin
-ADMIN_EMAIL=admin@admin.com
-ADMIN_PASSWORD=admin
+python manage.py collectstatic
+cp -r /app/static/. web/static
 
 python manage.py migrate
 
@@ -22,6 +20,4 @@ add_tag "Завтрак" "#FF0000" "breakfast"
 add_tag "Обед" "#00FF00" "lunch"
 add_tag "Ужин" "#0000FF" "dinner"
 
-python manage.py load_data
-
-python manage.py runserver
+gunicorn --bind 0.0.0.0:8080 foodgram.wsgi
