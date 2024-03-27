@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python manage.py collectstatic
-cp -r /app/static/. web/static
+cp -r /app/static/. /backend_static
 
 python manage.py migrate
 

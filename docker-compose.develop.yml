@@ -17,30 +17,32 @@ services:
   frontend:
     container_name: food-front
     build: ./frontend
-    volumes:
-      - static:/app/frontend_static
     command: cp -r /app/build/. /app/frontend_static
-
+    volumes:
+      - static:/frontend_static
+  
   backend:
     container_name: food-back
-    build: ./backend/foodgram
+    build: ./backend
     env_file: .env
     volumes:
-      - static:/app/web
+      - static:/backend_static
       - media:/app/media
     depends_on:
       - frontend
       - db
-    command: sh -c "sleep 5 && ./up.sh"
+    command: sh -c "sleep 5 && ./start.sh"
     restart: always
 
-  nginx:
+  gateway:
     container_name: food-gateway
     build: ./gateway
     env_file: .env
     volumes:
-      - static:/web
-      - media:/web/media
+      - static:/static
+      - media:/media
     ports:
       - 8080:80
+    depends_on:
+      - frontend
     restart: always
