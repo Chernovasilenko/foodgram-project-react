@@ -12,7 +12,7 @@ FLUSHING_MESSAGE = (
 
 
 class Command(BaseCommand):
-    help = """Импорт данных дял ингридиентов из CSV-файла для базы данных"""
+    help = """Импорт данных для ингридиентов из CSV-файла для базы данных"""
 
     def handle(self, *args, **options):
         try:
@@ -50,3 +50,4 @@ class Command(BaseCommand):
                     'Все данные успешно загружены'
                 )
             )
+
