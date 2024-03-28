@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python manage.py collectstatic
-cp -r /app/static/. /backend_static
+cp -r /app/static/. /backend_static/static/
 
 ADMIN_USERNAME=admin
 ADMIN_EMAIL=admin@admin.com
