@@ -1,4 +1,4 @@
-# praktikum_new_diplom
+# Foodgram
 
 py -3.9 -m venv venv 
 
