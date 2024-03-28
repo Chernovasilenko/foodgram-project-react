@@ -17,7 +17,7 @@ services:
   frontend:
     container_name: food-front
     image: randlex/food_front
-    command: cp -r /app/build/. /app/frontend_static
+    command: cp -r /app/build/. /frontend_static
     volumes:
       - static:/frontend_static
 
@@ -31,14 +31,7 @@ services:
     depends_on:
       - frontend
       - db
-    # command: sh -c "sleep 5 && ./start.sh"
-    command: >
-      sh -c "python manage.py collectstatic
-             cp -r /app/static/. /backend_static
-             python manage.py migrate
-             python manage.py load_recipes
-             python manage.py load_ingredients
-             gunicorn --bind 0.0.0.0:8080 foodgram.wsgi"
+    command: sh -c "sleep 5 && ./run.sh"
     restart: always
 
   gateway:
