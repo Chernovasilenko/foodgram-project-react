@@ -50,4 +50,3 @@ class Command(BaseCommand):
                     'Все данные успешно загружены'
                 )
             )
-
