@@ -16,14 +16,14 @@ services:
 
   frontend:
     container_name: food-front
-    image: ${DOCKER_USERNAME}/food_front
+    image: randlex/food_front
     command: cp -r /app/build/. /app/frontend_static
     volumes:
       - static:/frontend_static
 
   backend:
     container_name: food-back
-    image: ${DOCKER_USERNAME}/food_back
+    image: randlex/food_back
     env_file: .env
     volumes:
       - static:/backend_static
@@ -36,7 +36,7 @@ services:
 
   gateway:
     container_name: food-gateway
-    image: ${DOCKER_USERNAME}/food_gateway
+    image: randlex/food_gateway
     volumes:
       - static:/static
       - media:/media
