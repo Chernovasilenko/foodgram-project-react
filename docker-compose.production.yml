@@ -23,7 +23,7 @@ services:
 
   backend:
     container_name: food-back
-    image: ${DOCKER_USERNAME}/food_back:latest
+    image: ${DOCKER_USERNAME}/food_back
     env_file: .env
     volumes:
       - static:/backend_static
@@ -31,13 +31,12 @@ services:
     depends_on:
       - frontend
       - db
-    command: sh -c "sleep 5 && ./up.sh"
+    command: sh -c "sleep 5 && ./start.sh"
     restart: always
 
   gateway:
     container_name: food-gateway
-    image: ${{DOCKER_USERNAME}/food_gateway:latest
-    env_file: .env
+    image: ${DOCKER_USERNAME}/food_gateway
     volumes:
       - static:/static
       - media:/media
