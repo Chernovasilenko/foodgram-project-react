@@ -23,6 +23,6 @@ add_tag "Завтрак" "#FF0000" "breakfast"
 add_tag "Обед" "#00FF00" "lunch"
 add_tag "Ужин" "#0000FF" "dinner"
 
-python manage.py load_data
+python manage.py load_recipes
 
 python manage.py runserver
