@@ -3,10 +3,6 @@
 python manage.py collectstatic
 cp -r /app/static/. /backend_static/static/
 
-ADMIN_USERNAME=admin
-ADMIN_EMAIL=admin@admin.com
-ADMIN_PASSWORD=admin
-
 python manage.py migrate
 
 echo "from django.contrib.auth import get_user_model; User = get_user_model();
