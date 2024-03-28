@@ -23,3 +23,5 @@ Tag.objects.create(name='$name', color='$color', slug='$slug')" | python manage.
 add_tag "Завтрак" "#FF0000" "breakfast"
 add_tag "Обед" "#00FF00" "lunch"
 add_tag "Ужин" "#0000FF" "dinner"
+
+gunicorn --bind 0.0.0.0:8080 foodgram.wsgi
