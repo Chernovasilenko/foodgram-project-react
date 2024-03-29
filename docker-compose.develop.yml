@@ -40,7 +40,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
-      - media:/media
+      - media:/web/media
     ports:
       - 8080:80
     restart: always
