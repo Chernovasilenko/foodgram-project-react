@@ -16,22 +16,24 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    """Пользователь."""
+    """Вьюсет для профиля."""
 
     @action(
-        detail=False, methods=('GET',), permission_classes=(IsAuthenticated,)
+        detail=False, methods=('get',), permission_classes=(IsAuthenticated,)
     )
     def me(self, request):
+        """Получение данных пользователя."""
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
 
 class UserSubscribeView(APIView):
-    """Подписка на пользователя."""
+    """Вьюсет для подписки на пользователя."""
 
     permission_classes = (IsAdminOrAuthorOrReadOnly,)
 
     def post(self, request, user_id):
+        """Подписаться на пользователя."""
         author = get_object_or_404(User, id=user_id)
         serializer = UserSubscribeSerializer(
             data={'user': request.user.id, 'author': author.id},
@@ -42,6 +44,7 @@ class UserSubscribeView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, user_id):
+        """отписаться от пользователя."""
         author = get_object_or_404(User, id=user_id)
         follower = request.user.follower.filter(author=author)
         if not follower:
@@ -54,9 +57,10 @@ class UserSubscribeView(APIView):
 
 
 class UserSubscriptionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Получение списка всех подписок на пользователей."""
+    """Вьюсет для списка подписок пользователя."""
 
     serializer_class = UserSubscribeRepresentSerializer
 
     def get_queryset(self):
+        """Получает подписчиков пользователя."""
         return User.objects.filter(following__user=self.request.user)

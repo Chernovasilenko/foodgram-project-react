@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
 
 from api.v1.permissions import IsAdminOrAuthorOrReadOnly
 from api.v1.recipes.filters import IngredientFilter, RecipeFilter
@@ -22,19 +22,25 @@ from recipes.models import (
 )
 
 
-class TagViewSet(ModelViewSet):
+class TagViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для тегов."""
 
-    http_method_names = ('get',)
     queryset = Tag.objects.all()
     serializer_class = TagGetSerializer
     pagination_class = None
 
 
-class IngredientViewSet(ModelViewSet):
-    """Ингредиент."""
+class IngredientViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    """Вьюсет для ингридиентов."""
 
-    http_method_names = ('get',)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -42,8 +48,8 @@ class IngredientViewSet(ModelViewSet):
     pagination_class = None
 
 
-class RecipeViewSet(ModelViewSet):
-    """Рецепт."""
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Вьюсет для рецептов."""
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAdminOrAuthorOrReadOnly,)
@@ -52,6 +58,7 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
+        """Выбор сериализатора в зависимости от запроса."""
         if self.action in ('list', 'retrieve'):
             return RecipeGetSerializer
         return RecipeCreateUpdateSerializer
@@ -62,6 +69,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
+        """Добавление/удаление рецепта в избранное."""
         recipe_processor = RecipeProcessor()
         err_msg = 'Рецепта нет в избранном.'
         return recipe_processor.execute(
@@ -74,6 +82,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
+        """Добавление рецепта в список покупок."""
         recipe_processor = RecipeProcessor()
         err_msg = 'Рецепт отсутствует в списке покупок.'
         return recipe_processor.execute(
@@ -86,4 +95,5 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
+        """Выгружает список покупок в файл."""
         return get_shopping_cart(request)

@@ -9,7 +9,7 @@ from recipes.models import Recipe, RecipeIngredient
 
 
 class RecipeProcessor:
-    """Добавить/Удалить рецепт."""
+    """Добавить/удалить рецепт."""
 
     @staticmethod
     def __add_recipe(serializer_name, request, recipe):
@@ -41,7 +41,6 @@ class RecipeProcessor:
                     "Рецепт с указанным идентификатором не существует."
                 )
             return self.__add_recipe(serializer_name, request, recipe)
-
         if request.method == 'DELETE':
             recipe = get_object_or_404(Recipe, id=pk)
             return self.__delete_recipe(model, request, err_msg, recipe)
