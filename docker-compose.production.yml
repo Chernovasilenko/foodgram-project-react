@@ -38,6 +38,7 @@ services:
              python manage.py migrate
              python manage.py load_ingredients
              python manage.py load_recipes
+             python manage.py addsuperuser
              gunicorn --bind 0.0.0.0:8080 foodgram.wsgi"
     restart: always
 
