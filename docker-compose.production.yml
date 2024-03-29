@@ -31,13 +31,12 @@ services:
     depends_on:
       - frontend
       - db
-    # command: sh -c "./run.sh"
     command: >
       sh -c "python manage.py collectstatic --noinput
              cp -r /app/static/. /backend_static/static/
              python manage.py migrate
              python manage.py load_ingredients
-             python manage.py load_recipes
+             python manage.py load_tags
              python manage.py addsuperuser
              gunicorn --bind 0.0.0.0:8080 foodgram.wsgi"
     restart: always

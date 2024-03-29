@@ -16,16 +16,23 @@ ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'admin')
 
 
 class Command(BaseCommand):
-    help = 'Добавление тестового администратора'
+    help = 'Добавление администратора.'
 
     def handle(self, *args, **kwargs):
         try:
             User.objects.create_superuser(
                 ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD
             )
-            self.stdout.write(self.style.SUCCESS('Администратор добавлен.'))
         except IntegrityError as e:
             raise CommandError(
-                f'При загрузке данных произошла ошибка: {e}\n'
-                'Данные, которые вы пытаетесь загрузить, уже есть в таблице'
+                f'При добавлении администратора произошла ошибка: {e}\n'
+                'Администратор с таким именем уже существует.'
+            )
+        except Exception as e:
+            raise CommandError(
+                f'При добавлении администратора произошла ошибка: {e}'
+            )
+        else:
+            self.stdout.write(
+                self.style.SUCCESS(f'Администратор {ADMIN_USERNAME} добавлен.')
             )

@@ -5,14 +5,9 @@ from django.db.utils import IntegrityError
 
 from recipes.models import Ingredient
 
-FLUSHING_MESSAGE = (
-    '\nПеред следующей загрузкой данных необходимо очистить базу '
-    'данных командой "python manage.py flush"'
-)
-
 
 class Command(BaseCommand):
-    help = """Импорт данных для ингридиентов из CSV-файла для базы данных"""
+    help = 'Импорт данных для ингридиентов из CSV-файла для базы данных.'
 
     def handle(self, *args, **options):
         Ingredient.objects.all().delete()
@@ -32,22 +27,20 @@ class Command(BaseCommand):
             raise CommandError(
                 f'При загрузке данных произошла ошибка: {e}\n'
                 f'Проверьте, что в директории "data" находится файл '
-                f'"ingredients.csv" и он правильно назван'
-                f'{FLUSHING_MESSAGE}'
+                f'"ingredients.csv" и он правильно назван.'
             )
         except IntegrityError as e:
             raise CommandError(
                 f'При загрузке данных произошла ошибка: {e}\n'
-                'Данные, которые вы пытаетесь загрузить, уже есть в таблице'
-                f'{FLUSHING_MESSAGE}'
+                'Данные, которые вы пытаетесь загрузить, уже есть в таблице.'
             )
         except Exception as e:
             raise CommandError(
-                f'При загрузке данных произошла ошибка: {e}{FLUSHING_MESSAGE}'
+                f'При загрузке данных произошла ошибка: {e}'
             )
         else:
             self.stdout.write(
                 self.style.SUCCESS(
-                    'Все данные успешно загружены'
+                    'Все данные успешно загружены.'
                 )
             )
