@@ -23,10 +23,11 @@ class Command(BaseCommand):
             User.objects.create_superuser(
                 ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD
             )
-        except IntegrityError as e:
-            raise CommandError(
-                f'При добавлении администратора произошла ошибка: {e}\n'
-                'Администратор с таким именем уже существует.'
+        except IntegrityError:
+            self.stdout.write(
+                self.style.WARNING(
+                    f'Администратор с именем {ADMIN_USERNAME} уже существует.'
+                )
             )
         except Exception as e:
             raise CommandError(

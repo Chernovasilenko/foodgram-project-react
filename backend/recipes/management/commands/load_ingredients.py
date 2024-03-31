@@ -29,9 +29,8 @@ class Command(BaseCommand):
                 f'Проверьте, что в директории "data" находится файл '
                 f'"ingredients.csv" и он правильно назван.'
             )
-        except IntegrityError as e:
+        except IntegrityError:
             raise CommandError(
-                f'При загрузке данных произошла ошибка: {e}\n'
                 'Данные, которые вы пытаетесь загрузить, уже есть в таблице.'
             )
         except Exception as e:
