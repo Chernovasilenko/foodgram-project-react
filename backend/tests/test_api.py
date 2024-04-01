@@ -24,11 +24,12 @@ URL_INGRIDIENT_NAME = lazy_fixture('ingredient_url_name')
 URL_RECIPE_FAVORITE = lazy_fixture('add_recipe_to_favorite_url')
 URL_DL_SHOPCART = '/api/recipes/download_shopping_cart/'
 URL_ADD_SHOPCART = lazy_fixture('add_recipe_to_shopcart_url')
-URL_USER_LIST = '/api/users/'
+URL_USERS = '/api/users/'
 URL_USER_DETAIL = lazy_fixture('user_detail_url')
 URL_NOT_EXIST_USER_DETAIL = '/api/users/9999/'
 URL_USER_ME = '/api/users/me/'
 URL_SET_PASSWORD = '/api/users/set_password/'
+URL_TOKEN_LOGIN = '/api/auth/token/login/'
 URL_TOKEN_LOGOUT = '/api/auth/token/logout/'
 URL_SUBSCRIPTIONS = '/api/users/subscriptions/'
 URL_SUBSCRIBE = lazy_fixture('user_subscribe_url')
@@ -54,7 +55,7 @@ URL_NOT_FOUND_SUBSCRIBE = '/api/users/9999/subscribe/'
         (URL_RECIPE_FAVORITE, AUTHOR, status.HTTP_201_CREATED, 'POST'),
         (URL_RECIPE_FAVORITE, USER_SUB, status.HTTP_204_NO_CONTENT, 'DELETE'),
         (URL_RECIPE_FAVORITE, USER_SUB, status.HTTP_400_BAD_REQUEST, 'POST'),
-        (URL_RECIPE_FAVORITE, AUTHOR, status.HTTP_404_NOT_FOUND, 'DELETE'),
+        (URL_RECIPE_FAVORITE, AUTHOR, status.HTTP_400_BAD_REQUEST, 'DELETE'),
         (URL_DL_SHOPCART, CLIENT, status.HTTP_401_UNAUTHORIZED, 'GET'),
         (URL_DL_SHOPCART, AUTHOR, status.HTTP_400_BAD_REQUEST, 'GET'),
         (URL_DL_SHOPCART, USER_SUB, status.HTTP_200_OK, 'GET'),
@@ -62,9 +63,9 @@ URL_NOT_FOUND_SUBSCRIBE = '/api/users/9999/subscribe/'
         (URL_ADD_SHOPCART, CLIENT, status.HTTP_401_UNAUTHORIZED, 'DELETE'),
         (URL_ADD_SHOPCART, AUTHOR, status.HTTP_201_CREATED, 'POST'),
         (URL_ADD_SHOPCART, USER_SUB, status.HTTP_400_BAD_REQUEST, 'POST'),
-        (URL_ADD_SHOPCART, AUTHOR, status.HTTP_404_NOT_FOUND, 'DELETE'),
+        (URL_ADD_SHOPCART, AUTHOR, status.HTTP_400_BAD_REQUEST, 'DELETE'),
         (URL_ADD_SHOPCART, USER_SUB, status.HTTP_204_NO_CONTENT, 'DELETE'),
-        (URL_USER_LIST, CLIENT, status.HTTP_200_OK, 'GET'),
+        (URL_USERS, CLIENT, status.HTTP_200_OK, 'GET'),
         (URL_USER_DETAIL, CLIENT, status.HTTP_200_OK, 'GET'),
         (URL_USER_DETAIL, AUTHOR, status.HTTP_200_OK, 'GET'),
         (URL_USER_DETAIL, ANOTHER_AUTHOR, status.HTTP_200_OK, 'GET'),
@@ -85,14 +86,78 @@ URL_NOT_FOUND_SUBSCRIBE = '/api/users/9999/subscribe/'
         (URL_TOKEN_LOGOUT, CLIENT, status.HTTP_401_UNAUTHORIZED, 'POST'),
     ),
 )
-def test_get_pages_availability(
+def test_request(
     url, user, expected_status, method
 ):
-    """Проверка доступа к адресам."""
+    """Проверка запросов."""
     if method == 'GET':
         response = user.get(url)
     if method == 'POST':
         response = user.post(url)
+    if method == 'PUT':
+        response = user.put(url)
+    if method == 'DELETE':
+        response = user.delete(url)
+    assert response.status_code == expected_status
+
+
+@pytest.mark.parametrize(
+    'url, user, expected_status, method, data',
+    (
+        (
+            URL_USERS, CLIENT, status.HTTP_201_CREATED, 'POST',
+            {
+                'email': 'test_user@yandex.ru',
+                'username': 'testik',
+                'first_name': 'Test',
+                'last_name': 'Testovoi',
+                'password': 'passworTest0104',
+            }
+        ),
+        (
+            URL_USERS, CLIENT, status.HTTP_400_BAD_REQUEST, 'POST',
+            {
+                'email': 'test_user@yandex.ru',
+                'username': 'testik',
+            }
+        ),
+        (
+            URL_SET_PASSWORD, AUTHOR, status.HTTP_204_NO_CONTENT, 'POST',
+            {
+                'new_password': 'thi$Pa$$w0rdW@sCh@nged',
+                'current_password': 'MySecretPas$word',
+            }
+        ),
+        (
+            URL_SET_PASSWORD, AUTHOR, status.HTTP_400_BAD_REQUEST, 'POST',
+            {
+                'new_password': 'new_password',
+            }
+        ),
+        (
+            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_200_OK, 'POST',
+            {
+                'password': 'MySecretPas$word',
+                'email': 'test_user@ya.ru'
+            }
+        ),
+        (
+            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_400_BAD_REQUEST, 'POST',
+            {
+                'password': 'WrongPassword',
+                'email': 'test_user@ya.ru'
+            }
+        ),
+    ),
+)
+def test_request_with_data(
+    url, user, expected_status, method, data
+):
+    """Проверка запросов."""
+    if method == 'GET':
+        response = user.get(url)
+    if method == 'POST':
+        response = user.post(url, data)
     if method == 'PUT':
         response = user.put(url)
     if method == 'DELETE':

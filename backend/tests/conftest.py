@@ -1,12 +1,16 @@
 import pytest
+
+from django.contrib.auth.hashers import make_password
 from rest_framework.test import APIClient
 
 from recipes.models import (
-    FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
+    FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
 )
 from users.models import Subscribe
 
 pytestmark = pytest.mark.django_db
+
+PASSWORD = make_password('MySecretPas$word')
 
 
 @pytest.fixture
@@ -16,7 +20,7 @@ def author(django_user_model):
         email='test_user@ya.ru',
         first_name='Test',
         last_name='Testovoi',
-        password='qaZ171786T',
+        password=PASSWORD,
     )
 
 
@@ -34,6 +38,14 @@ def author_client(author, api_client):
 
 
 @pytest.fixture
+def ingredient():
+    return Ingredient.objects.create(
+        name='ингридиент',
+        measurement_unit='г',
+    )
+
+
+@pytest.fixture
 def recipe(author, ingredient, tag):
     recipe = Recipe.objects.create(
         author=author,
@@ -45,11 +57,6 @@ def recipe(author, ingredient, tag):
         cooking_time=60,
     )
     recipe.tags.add(tag.pk)
-    RecipeIngredient.objects.create(
-        ingredient=ingredient,
-        recipe=recipe,
-        amount=1
-    )
     return recipe
 
 
@@ -60,7 +67,7 @@ def another_author_client(django_user_model, api_client):
         email='test_user@mail.ru',
         first_name='Другой',
         last_name='автор',
-        password='passworTest0104',
+        password=PASSWORD,
     )
     api_client.force_authenticate(another_author)
     return api_client
@@ -73,7 +80,7 @@ def author_sub_client(django_user_model, author, api_client, recipe):
         email='test_sub@mail.ru',
         first_name='подписчик',
         last_name='автор',
-        password='passworTest0104',
+        password=PASSWORD,
     )
     Subscribe.objects.create(
         user=user_sub,
@@ -97,14 +104,6 @@ def tag():
         name='Завтрак',
         color='#FF0000',
         slug='breakfast',
-    )
-
-
-@pytest.fixture
-def ingredient():
-    return Ingredient.objects.create(
-        name='ингридиент',
-        measurement_unit='г',
     )
 
 
