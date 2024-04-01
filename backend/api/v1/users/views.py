@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
 from rest_framework import status, mixins, viewsets
 from rest_framework.decorators import action
@@ -7,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.v1.permissions import IsAdminOrAuthorOrReadOnly
 from api.v1.users.serializers import (
     UserSubscribeSerializer, UserSubscribeRepresentSerializer
 )
@@ -30,7 +30,7 @@ class CustomUserViewSet(UserViewSet):
 class UserSubscribeView(APIView):
     """Вьюсет для подписки на пользователя."""
 
-    permission_classes = (IsAdminOrAuthorOrReadOnly,)
+    permission_classes = (CurrentUserOrAdmin,)
 
     def post(self, request, user_id):
         """Подписаться на пользователя."""
@@ -59,6 +59,7 @@ class UserSubscribeView(APIView):
 class UserSubscriptionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Вьюсет для списка подписок пользователя."""
 
+    permission_classes = (CurrentUserOrAdmin,)
     serializer_class = UserSubscribeRepresentSerializer
 
     def get_queryset(self):

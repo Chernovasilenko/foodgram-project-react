@@ -133,3 +133,4 @@ dmypy.json
 
 backend/media
 backend/static
+/postman-collection

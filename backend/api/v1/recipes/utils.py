@@ -29,7 +29,7 @@ class RecipeProcessor:
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': err_msg}, status=status.HTTP_404_NOT_FOUND)
 
     def execute(self, serializer_name, model, request, pk, err_msg):
         """Проверить тип и обработать запрос."""
