@@ -1,9 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
 
-from django.conf import settings
-from django.urls import reverse
-
 from recipes.models import (
     FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 )

@@ -52,25 +52,3 @@ def test_change_password_with_auth_user_with_error(author_client):
 #     r = api_client.post('/api/auth/token/login/', data=data)
 #     assert r.json() == '0'
 #     assert r.status_code == status.HTTP_200_OK
-
-
-# def test_create_recipe_with_auth_user(author_client, ingredient, tag):
-#     data = {
-#         "tags": [tag.pk],
-#         "name": "test",
-#         "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAA"
-#                     "BieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw"
-#                     "4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
-#         "text": "test",
-#         "cooking_time": 1,
-#         "ingredients": [
-#             {"id": ingredient.pk, "amount": 10}
-#         ]
-#     }
-
-#     r = author_client.post('/api/recipes/', data=data)
-#     assert r.json() == '0'
-#     assert r.status_code == status.HTTP_201_CREATED
-
-#     r = author_client.post('/api/recipes/', data=data)
-#     assert r.status_code == status.HTTP_400_BAD_REQUEST
