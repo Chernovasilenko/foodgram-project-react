@@ -86,10 +86,10 @@ URL_NOT_FOUND_SUBSCRIBE = '/api/users/9999/subscribe/'
         (URL_TOKEN_LOGOUT, CLIENT, status.HTTP_401_UNAUTHORIZED, 'POST'),
     ),
 )
-def test_request(
+def test_endpoints(
     url, user, expected_status, method
 ):
-    """Проверка запросов."""
+    """Проверка доступа к эндпоинтам."""
     if method == 'GET':
         response = user.get(url)
     if method == 'POST':
@@ -102,12 +102,12 @@ def test_request(
 
 
 @pytest.mark.parametrize(
-    'url, user, expected_status, method, data',
+    'url, user, expected_status, data',
     (
         (
-            URL_USERS, CLIENT, status.HTTP_201_CREATED, 'POST',
+            URL_USERS, CLIENT, status.HTTP_201_CREATED,
             {
-                'email': 'test_user@yandex.ru',
+                'email': 'test_user@ya.ru',
                 'username': 'testik',
                 'first_name': 'Test',
                 'last_name': 'Testovoi',
@@ -115,34 +115,34 @@ def test_request(
             }
         ),
         (
-            URL_USERS, CLIENT, status.HTTP_400_BAD_REQUEST, 'POST',
+            URL_USERS, CLIENT, status.HTTP_400_BAD_REQUEST,
             {
-                'email': 'test_user@yandex.ru',
+                'email': 'test_user@ya.ru',
                 'username': 'testik',
             }
         ),
         (
-            URL_SET_PASSWORD, AUTHOR, status.HTTP_204_NO_CONTENT, 'POST',
+            URL_SET_PASSWORD, AUTHOR, status.HTTP_204_NO_CONTENT,
             {
                 'new_password': 'thi$Pa$$w0rdW@sCh@nged',
                 'current_password': 'MySecretPas$word',
             }
         ),
         (
-            URL_SET_PASSWORD, AUTHOR, status.HTTP_400_BAD_REQUEST, 'POST',
+            URL_SET_PASSWORD, AUTHOR, status.HTTP_400_BAD_REQUEST,
             {
                 'new_password': 'new_password',
             }
         ),
         (
-            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_200_OK, 'POST',
+            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_200_OK,
             {
                 'password': 'MySecretPas$word',
                 'email': 'test_user@ya.ru'
             }
         ),
         (
-            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_400_BAD_REQUEST, 'POST',
+            URL_TOKEN_LOGIN, AUTHOR, status.HTTP_400_BAD_REQUEST,
             {
                 'password': 'WrongPassword',
                 'email': 'test_user@ya.ru'
@@ -150,16 +150,9 @@ def test_request(
         ),
     ),
 )
-def test_request_with_data(
-    url, user, expected_status, method, data
+def test_endpoints_with_data(
+    url, user, expected_status, data
 ):
-    """Проверка запросов."""
-    if method == 'GET':
-        response = user.get(url)
-    if method == 'POST':
-        response = user.post(url, data)
-    if method == 'PUT':
-        response = user.put(url)
-    if method == 'DELETE':
-        response = user.delete(url)
+    """Проверка POST-запросов."""
+    response = user.post(url, data)
     assert response.status_code == expected_status
