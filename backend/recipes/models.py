@@ -109,7 +109,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    """Связующая модель рецепт-ингредиент."""
+    """Модель связи рецепт-ингредиент."""
 
     recipe = models.ForeignKey(
         Recipe,
@@ -139,7 +139,7 @@ class RecipeIngredient(models.Model):
             f'{self.recipe.name}: '
             f'{self.ingredient.name} - '
             f'{self.amount}/'
-            f'{self.ingredient.unit}'
+            f'{self.ingredient.measurement_unit}'
         )
 
 

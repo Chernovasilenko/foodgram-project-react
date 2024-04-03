@@ -61,13 +61,11 @@ def get_shopping_cart(request):
         .annotate(ingredient_amount=Sum('amount'))
     )
     shopping_list = f'Список покупок пользователя {user}:\n'
-
     for ingredient in ingredients:
         name = ingredient.get('ingredient__name')
-        unit = ingredient.get('ingredient__measurement_unit')
+        measurement_unit = ingredient.get('ingredient__measurement_unit')
         amount = ingredient.get('ingredient_amount')
-        shopping_list += f'\n{name} - {amount}/{unit}'
-
+        shopping_list += f'\n{name} - {amount}/{measurement_unit}'
     file_name = f'{user}_shopping_cart.txt'
     response = HttpResponse(shopping_list, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename={file_name}'

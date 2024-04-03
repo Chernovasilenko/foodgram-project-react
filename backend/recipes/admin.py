@@ -67,6 +67,11 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     search_fields = ('user', 'recipe')
 
 
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'ingredient', 'amount')
+
+
 admin.site.site_title = 'Административный сайт Foodgram'
 admin.site.site_header = 'Администрирование Foodgram'
 admin.site.empty_value_display = 'Не задано'
