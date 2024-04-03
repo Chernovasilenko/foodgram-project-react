@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.permissions import CurrentUserOrAdmin
 from djoser.views import UserViewSet
-from rest_framework import status, mixins, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -44,7 +44,7 @@ class UserSubscribeView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, user_id):
-        """отписаться от пользователя."""
+        """Отписаться от пользователя."""
         author = get_object_or_404(User, id=user_id)
         follower = request.user.follower.filter(author=author)
         if not follower:

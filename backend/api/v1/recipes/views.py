@@ -5,20 +5,21 @@ from rest_framework.permissions import IsAuthenticated
 
 from api.v1.permissions import IsAdminOrAuthorOrReadOnly
 from api.v1.recipes.filters import IngredientFilter, RecipeFilter
+from api.v1.recipes.mixins import CreateListDestroyPatchMixin
 from api.v1.recipes.serializers import (
-    TagGetSerializer,
     IngredientSerializer,
     RecipeGetSerializer,
     RecipeCreateUpdateSerializer,
+    TagGetSerializer,
 )
+from api.v1.recipes.utils import get_shopping_cart, RecipeHandler
 from api.v1.users.serializers import FavoriteSerializer, ShoppingCartSerializer
-from api.v1.recipes.utils import RecipeProcessor, get_shopping_cart
 from recipes.models import (
-    Tag,
+    FavoriteRecipe,
     Ingredient,
     Recipe,
     ShoppingCart,
-    FavoriteRecipe
+    Tag
 )
 
 
@@ -48,7 +49,7 @@ class IngredientViewSet(
     pagination_class = None
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(CreateListDestroyPatchMixin):
     """Вьюсет для рецептов."""
 
     queryset = Recipe.objects.all()
@@ -70,9 +71,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         """Добавление/удаление рецепта в избранное."""
-        recipe_processor = RecipeProcessor()
         err_msg = 'Рецепта нет в избранном.'
-        return recipe_processor.execute(
+        return RecipeHandler().execute(
             FavoriteSerializer, FavoriteRecipe, request, pk, err_msg
         )
 
@@ -83,9 +83,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
-        recipe_processor = RecipeProcessor()
         err_msg = 'Рецепт отсутствует в списке покупок.'
-        return recipe_processor.execute(
+        return RecipeHandler().execute(
             ShoppingCartSerializer, ShoppingCart, request, pk, err_msg
         )
 

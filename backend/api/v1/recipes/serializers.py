@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-# from rest_framework.validators import UniqueTogetherValidator
 
 from api.v1.recipes.fields import Base64ImageField
 from api.v1.users.serializers import UserGetSerializer
@@ -141,32 +140,29 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        """Проверяет заполнение полей ингридиентов и тегов."""
-        if not self.initial_data.get('ingredients'):
+        """Проверка полей с ингридиентами и тегами."""
+        ingredients = self.initial_data.get('ingredients')
+        if not ingredients:
             raise ValidationError('В рецепте должны быть ингридиенты!')
-        if not self.initial_data.get("tags"):
-            raise ValidationError('В рецепте должен быть минимум один тег!')
-        return data
-
-    def validate_ingredients(self, ingredients):
-        """Проверяет правильность заполнения поля с ингридиентами."""
         ingredients_list = []
-        for item in ingredients:
+        for ingredient in ingredients:
+            if ingredient['amount'] == 0:
+                raise ValidationError(
+                    'Количество ингредиента не может быть равным нулю!'
+                )
             try:
-                ingredient = Ingredient.objects.get(id=item['id'])
+                Ingredient.objects.get(id=ingredient['id'])
             except Ingredient.DoesNotExist:
                 raise ValidationError('Указан несуществующий ингредиент!')
-
             if ingredient in ingredients_list:
                 raise ValidationError('Ингредиенты не могут повторяться!')
             ingredients_list.append(ingredient)
-        return ingredients
-
-    def validate_tags(self, tags):
-        """Проверяет правильность заполнения поля с тегами."""
+        tags = self.initial_data.get('tags')
+        if not tags:
+            raise ValidationError('В рецепте должен быть минимум один тег!')
         if len(set(tags)) != len(tags):
             raise ValidationError('Теги должны быть уникальными!')
-        return tags
+        return data
 
     def add_ingredients(self, ingredients, recipe):
         """Добавляет ингредиенты."""

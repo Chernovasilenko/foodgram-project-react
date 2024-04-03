@@ -88,10 +88,13 @@ python3 manage.py load_ingredients
 python3 manage.py runserver
 ```
 
-Для проверки работоспособности API можно запустить тесты:
+Для проверки работоспособности бэкенда можно запустить тесты:
 ```bash
 pytest
 ```
+
+Также для проверки API можно запустить тесты через Postman. Инструкция и тесты находятся в директории `postman-collection`.
+
 
 # Локальный запуск через Docker
 
@@ -229,6 +232,6 @@ sudo systemctl reload nginx
 Данные для доступа:
 
 ``` 
-login - admin@admin.com
-pass - admin
+Логин: admin@admin.com
+Пароль: admin
 ```

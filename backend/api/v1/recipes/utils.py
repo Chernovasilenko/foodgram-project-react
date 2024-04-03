@@ -8,11 +8,11 @@ from rest_framework.response import Response
 from recipes.models import Recipe, RecipeIngredient
 
 
-class RecipeProcessor:
+class RecipeHandler:
     """Добавить/удалить рецепт."""
 
     @staticmethod
-    def __add_recipe(serializer_name, request, recipe):
+    def add_recipe(serializer_name, request, recipe):
         """Добавить рецепт."""
         serializer = serializer_name(
             data={'user': request.user.id, 'recipe': recipe.id},
@@ -23,7 +23,7 @@ class RecipeProcessor:
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def __delete_recipe(model, request, err_msg, recipe):
+    def delete_recipe(model, request, err_msg, recipe):
         """Удалить рецепт."""
         obj = model.objects.filter(user=request.user, recipe=recipe)
         if obj.exists():
@@ -38,12 +38,12 @@ class RecipeProcessor:
                 recipe = Recipe.objects.get(id=pk)
             except Recipe.DoesNotExist:
                 raise ValidationError(
-                    "Рецепт с указанным идентификатором не существует."
+                    "Рецепт не существует."
                 )
-            return self.__add_recipe(serializer_name, request, recipe)
+            return self.add_recipe(serializer_name, request, recipe)
         if request.method == 'DELETE':
             recipe = get_object_or_404(Recipe, id=pk)
-            return self.__delete_recipe(model, request, err_msg, recipe)
+            return self.delete_recipe(model, request, err_msg, recipe)
 
 
 def get_shopping_cart(request):

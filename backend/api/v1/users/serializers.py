@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.models import Subscribe
-from recipes.models import Recipe, FavoriteRecipe, ShoppingCart
+from recipes.models import FavoriteRecipe, Recipe, ShoppingCart
 
 User = get_user_model()
 
@@ -68,14 +68,11 @@ class UserSubscribeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверяет на валидность подписки."""
-        request = self.context.get('request')
-        if request.user == data['author']:
+        if self.context.get('request').user == data['author']:
             raise ValidationError('Нельзя подписаться на самого себя!')
         return data
 
     def to_representation(self, instance):
-        """?"""
-        request = self.context.get('request')
         return UserSubscribeRepresentSerializer(
             instance.author, context={'request': self.context.get('request')}
         ).data
@@ -109,9 +106,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        request = self.context.get('request')
         return RecipeShortSerializer(
-            instance.recipe, context={'request': request}
+            instance.recipe, context={'request': self.context.get('request')}
         ).data
 
 
