@@ -113,10 +113,11 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram
+            sudo docker stop food_back
+            sudo docker system prune -af
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
-            sudo docker system prune -af
 
   send_message:
     runs-on: ubuntu-latest
