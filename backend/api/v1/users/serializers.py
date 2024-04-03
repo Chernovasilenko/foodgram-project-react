@@ -77,12 +77,12 @@ class UserSubscribeSerializer(serializers.ModelSerializer):
         """?"""
         request = self.context.get('request')
         return UserSubscribeRepresentSerializer(
-            instance.author, context={'request': request}
+            instance.author, context={'request': self.context.get('request')}
         ).data
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
-    """Сериализатор краткой информации о рецепте в профиле."""
+    """Сериализатор краткой информации о рецепте."""
 
     class Meta:
         model = Recipe
@@ -99,11 +99,11 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FavoriteRecipe
-        fields = '__all__'
+        fields = ('id', 'user', 'recipe')
         validators = [
             UniqueTogetherValidator(
                 queryset=model.objects.all(),
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 message='Рецепт уже находится в избранном',
             )
         ]
@@ -116,15 +116,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(FavoriteSerializer):
-    """Сериализатор списка покупок пользователя."""
+    """Сериализатор списка покупок."""
 
     class Meta:
         model = ShoppingCart
-        fields = '__all__'
+        fields = ('id', 'user', 'recipe')
         validators = [
             UniqueTogetherValidator(
                 queryset=model.objects.all(),
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 message='Рецепт уже добавлен в список покупок',
             )
         ]
