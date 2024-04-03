@@ -157,7 +157,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                     'Количество ингредиента не может быть равным нулю!'
                 )
             try:
-                Ingredient.objects.get(id=ingredient['id'])
+                ingredient = Ingredient.objects.get(id=ingredient['id'])
             except Ingredient.DoesNotExist:
                 raise ValidationError('Указан несуществующий ингредиент!')
             if ingredient in ingredients_list:
