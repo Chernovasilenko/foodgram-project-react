@@ -9,7 +9,7 @@ from recipes.models import Recipe, RecipeIngredient
 
 
 class RecipeHandler:
-    """Добавить/удалить рецепт."""
+    """Добавление и удаление рецепта."""
 
     @staticmethod
     def add_recipe(serializer_name, request, recipe):
@@ -63,9 +63,9 @@ def get_shopping_cart(request):
     shopping_list = f'Список покупок пользователя {user}:\n'
 
     for ingredient in ingredients:
-        name = ingredient['ingredient__name']
-        unit = ingredient['ingredient__measurement_unit']
-        amount = ingredient['ingredient_amount']
+        name = ingredient.get('ingredient__name')
+        unit = ingredient.get('ingredient__measurement_unit')
+        amount = ingredient.get('ingredient_amount')
         shopping_list += f'\n{name} - {amount}/{unit}'
 
     file_name = f'{user}_shopping_cart.txt'

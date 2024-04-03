@@ -54,7 +54,6 @@ class RecipeViewSet(CreateListDestroyPatchMixin):
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAdminOrAuthorOrReadOnly,)
-    http_method_names = ('get', 'post', 'patch', 'delete')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
