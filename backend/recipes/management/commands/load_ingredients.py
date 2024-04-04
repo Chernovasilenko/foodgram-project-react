@@ -10,7 +10,6 @@ class Command(BaseCommand):
     help = 'Импорт данных для ингридиентов из CSV-файла для базы данных.'
 
     def handle(self, *args, **options):
-        Ingredient.objects.all().delete()
         try:
             with open('data/ingredients.csv', 'r', encoding='utf-8') as file:
                 reader = csv.reader(file, delimiter=",")
