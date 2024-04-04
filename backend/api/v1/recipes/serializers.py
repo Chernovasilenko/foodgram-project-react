@@ -37,6 +37,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         source='ingredient.measurement_unit',
         read_only=True,
     )
+    id = serializers.IntegerField(source='ingredient.id')
 
     class Meta:
         model = RecipeIngredient
@@ -76,7 +77,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         extra_fields = ('is_favorited', 'is_in_shopping_cart')
 
     def get_is_favorited(self, obj):
-        """Проверить наличие рецепта в избранном."""
+        """Проверка наличия рецепта в избранном."""
         request = self.context.get('request')
         return (
             request
@@ -87,7 +88,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         )
 
     def get_is_in_shopping_cart(self, obj):
-        """Проверить наличие рецепта в списке покупок."""
+        """Проверка наличия рецепта в списке покупок."""
         request = self.context.get('request')
         return (
             request
@@ -152,12 +153,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         """Проверка поля с ингридиентами."""
         ingredients_list = []
         for ingredient in ingredients:
-            if ingredient['amount'] == 0:
+            if ingredient.get('amount') == 0:
                 raise ValidationError(
                     'Количество ингредиента не может быть равным нулю!'
                 )
             try:
-                ingredient = Ingredient.objects.get(id=ingredient['id'])
+                ingredient = Ingredient.objects.get(id=ingredient.get('id'))
             except Ingredient.DoesNotExist:
                 raise ValidationError('Указан несуществующий ингредиент!')
             if ingredient in ingredients_list:
@@ -168,22 +169,22 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     def validate_tags(self, tags):
         """Проверка поля с тегами."""
         if len(set(tags)) != len(tags):
-            raise ValidationError('Теги не могут повторяться!!')
+            raise ValidationError('Теги не могут повторяться!')
         return tags
 
     @staticmethod
     def add_ingredients(ingredients, recipe):
-        """Добавляет ингредиенты."""
+        """Добавляет ингредиенты в рецепт."""
         for ingredient in ingredients:
-            ingredient_id = ingredient.get('id')
             RecipeIngredient.objects.create(
                 recipe=recipe,
-                ingredient_id=ingredient_id,
-                amount=ingredient.get("amount")
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount')
             )
 
     @transaction.atomic
     def create(self, validated_data):
+        """Создание рецепта."""
         request = self.context.get('request')
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
@@ -194,6 +195,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        """Редактирование рецепта."""
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         instance.tags.clear()
@@ -204,4 +206,5 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
+        """Добавление информации о рецепте в ответ запроса."""
         return RecipeGetSerializer(instance, context=self.context).data

@@ -73,6 +73,7 @@ class UserSubscribeSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
+        """Добавление информации о подписке в ответ запроса."""
         return UserSubscribeRepresentSerializer(
             instance.author, context={'request': self.context.get('request')}
         ).data
@@ -106,6 +107,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
+        """Добавление краткой информации о рецепте."""
         return RecipeShortSerializer(
             instance.recipe, context={'request': self.context.get('request')}
         ).data
