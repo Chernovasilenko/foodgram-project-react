@@ -31,6 +31,9 @@ class UserGetSerializer(UserSerializer):
     """Сериализатор получения информации о пользователе."""
 
     is_subscribed = serializers.SerializerMethodField()
+    email = serializers.EmailField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = User

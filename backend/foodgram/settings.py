@@ -14,22 +14,30 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1;localhost').split(';')
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
+]
+
+LOCAL_APPS = [
     'api.apps.ApiConfig',
     'core.apps.CoreConfig',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,7 +135,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.PageSizePagination',
+    'DEFAULT_PAGINATION_CLASS': f'api.{API_VER}.paginations.PageSizePagination',
 }
 
 DJOSER = {

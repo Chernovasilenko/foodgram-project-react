@@ -80,8 +80,6 @@ class Recipe(models.Model):
     image = models.ImageField(
         verbose_name='Изображение',
         upload_to='recipes/',
-        blank=True,
-        null=True
     )
     author = models.ForeignKey(
         User,

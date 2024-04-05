@@ -29,13 +29,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиентов в рецепте."""
 
-    name = serializers.StringRelatedField(
-        source='ingredient',
-        read_only=True,
-    )
-    measurement_unit = serializers.StringRelatedField(
-        source='ingredient.measurement_unit',
-        read_only=True,
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
     )
     id = serializers.IntegerField(source='ingredient.id')
 
@@ -122,12 +118,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     )
     ingredients = IngredientPostSerializer(
         many=True,
-        source='recipe_ingredients',
+        source='recipe_ingredients'
     )
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
         min_value=const.MIN_VALUE,
-        max_value=const.MAX_VALUE,
+        max_value=const.MAX_VALUE
     )
 
     class Meta:
@@ -151,6 +147,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, ingredients):
         """Проверка поля с ингридиентами."""
+        # if not ingredients:
+        #     raise serializers.ValidationError(
+        #         'В рецепте должны быть ингридиенты!'
+        #     )
         ingredients_list = []
         for ingredient in ingredients:
             if ingredient.get('amount') == 0:
@@ -168,6 +168,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_tags(self, tags):
         """Проверка поля с тегами."""
+        # if not tags:
+        #     raise serializers.ValidationError(
+        #         'В рецепте должен быть минимум один тег!'
+        #     )
         if len(set(tags)) != len(tags):
             raise ValidationError('Теги не могут повторяться!')
         return tags
@@ -196,6 +200,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         """Редактирование рецепта."""
+        # serializers.raise_errors_on_nested_writes(
+        #     'update', self, validated_data
+        # )
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         instance.tags.clear()

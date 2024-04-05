@@ -3,10 +3,7 @@ from rest_framework.permissions import SAFE_METHODS
 
 
 class IsAdminOrAuthorOrReadOnly(permissions.BasePermission):
-    """
-    Администратор или автор могут редактировать данные.
-    Другие пользователи могут запросить данные.
-    """
+    """Только администраторы или автор могут редактировать данные."""
 
     def has_permission(self, request, view):
         return (

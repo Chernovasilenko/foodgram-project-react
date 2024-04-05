@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,11 +23,7 @@ from recipes.models import (
 )
 
 
-class TagViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для тегов."""
 
     queryset = Tag.objects.all()
@@ -35,11 +31,7 @@ class TagViewSet(
     pagination_class = None
 
 
-class IngredientViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для ингридиентов."""
 
     queryset = Ingredient.objects.all()
@@ -77,10 +69,17 @@ class RecipeViewSet(CreateListDestroyPatchMixin):
 
     @action(
         detail=True,
-        methods=('post', 'delete'),
+        methods=('post',),
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
+        """Добавление рецепта в список покупок."""
+        return RecipeHandler().execute(
+            ShoppingCartSerializer, ShoppingCart, request, pk
+        )
+
+    @shopping_cart.mapping.delete
+    def delete_shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
         err_msg = 'Рецепт отсутствует в списке покупок.'
         return RecipeHandler().execute(

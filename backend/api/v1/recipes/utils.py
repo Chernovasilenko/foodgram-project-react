@@ -31,7 +31,7 @@ class RecipeHandler:
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
-    def execute(self, serializer_name, model, request, pk, err_msg):
+    def execute(self, serializer_name, model, request, pk, err_msg=None):
         """Проверить тип и обработать запрос."""
         if request.method == 'POST':
             try:

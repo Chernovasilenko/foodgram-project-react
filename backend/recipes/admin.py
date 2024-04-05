@@ -28,6 +28,9 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 0
+    min_num = 1
+    verbose_name = 'Ингредиент'
+    verbose_name_plural = 'Ингредиенты'
 
 
 @admin.register(Recipe)
@@ -39,7 +42,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags')
     list_display_links = ('name',)
     inlines = (RecipeIngredientInline,)
-    readonly_fields = ('favorites_amount',)
 
     @admin.display(description='Добавлено в избранное')
     def favorites_amount(self, obj):
@@ -61,15 +63,10 @@ class FavoriteRecipeAdmin(admin.ModelAdmin):
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-    """Администрирование спископ покупок."""
+    """Администрирование списков покупок."""
 
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user', 'recipe')
-
-
-@admin.register(RecipeIngredient)
-class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'recipe', 'ingredient', 'amount')
 
 
 admin.site.site_title = 'Административный сайт Foodgram'

@@ -27,6 +27,4 @@ class Command(BaseCommand):
                 f'При загрузке тегов произошла ошибка: {e}'
             )
         else:
-            self.stdout.write(
-                self.stdout.write(self.style.SUCCESS('Тэги загружены.'))
-            )
+            self.stdout.write(self.style.SUCCESS('Тэги загружены.'))

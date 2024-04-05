@@ -25,8 +25,8 @@ class Command(BaseCommand):
         except FileNotFoundError as e:
             raise CommandError(
                 f'При загрузке данных произошла ошибка: {e}\n'
-                f'Проверьте, что в директории "data" находится файл '
-                f'"ingredients.csv" и он правильно назван.'
+                'Проверьте, что в директории "data" находится файл '
+                '"ingredients.csv" и он правильно назван.'
             )
         except IntegrityError:
             raise CommandError(

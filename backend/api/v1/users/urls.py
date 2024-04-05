@@ -1,11 +1,12 @@
 from django.urls import include, path
+from djoser.views import UserViewSet
 from rest_framework import routers
 
 from api.v1.users import views
 
 router_users_v1 = routers.DefaultRouter()
 
-router_users_v1.register(r'users', views.CustomUserViewSet, basename='me')
+router_users_v1.register(r'users', UserViewSet)
 
 
 urlpatterns = [

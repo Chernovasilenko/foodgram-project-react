@@ -30,5 +30,3 @@ class CreateListDestroyPatchMixin(
     viewsets.GenericViewSet,
 ):
     """Миксин для GET, POST, DELETE и PATCH запросов."""
-
-    pass
