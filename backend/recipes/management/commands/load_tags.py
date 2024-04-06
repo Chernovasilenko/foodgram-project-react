@@ -17,10 +17,8 @@ class Command(BaseCommand):
         try:
             Tag.objects.bulk_create(Tag(**tag) for tag in DATA_TAGS)
         except IntegrityError:
-            self.stdout.write(
-                self.style.WARNING(
-                    'Теги, которые вы пытаетесь загрузить, уже есть в таблице.'
-                )
+            raise CommandError(
+                'Теги, которые вы пытаетесь загрузить, уже есть в таблице.'
             )
         except Exception as e:
             raise CommandError(

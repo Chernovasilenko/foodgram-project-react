@@ -98,7 +98,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 class IngredientPostSerializer(serializers.ModelSerializer):
     """Сериализатор добавления ингредиентов в рецепт."""
 
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(required=True)
     amount = serializers.IntegerField(
         min_value=const.MIN_VALUE,
         max_value=const.MAX_VALUE,
@@ -115,10 +115,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
+        required=True
     )
+
     ingredients = IngredientPostSerializer(
         many=True,
-        source='recipe_ingredients'
+        source='recipe_ingredients',
+        required=True
     )
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
@@ -137,20 +140,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def validate(self, data):
-        """Проверка полей с ингридиентами и тегами."""
-        if not self.initial_data.get('ingredients'):
-            raise ValidationError('В рецепте должны быть ингридиенты!')
-        if not self.initial_data.get('tags'):
-            raise ValidationError('В рецепте должен быть минимум один тег!')
-        return data
-
     def validate_ingredients(self, ingredients):
         """Проверка поля с ингридиентами."""
-        # if not ingredients:
-        #     raise serializers.ValidationError(
-        #         'В рецепте должны быть ингридиенты!'
-        #     )
+        if not ingredients:
+            raise serializers.ValidationError(
+                'В рецепте должны быть ингридиенты!'
+            )
         ingredients_list = []
         for ingredient in ingredients:
             if ingredient.get('amount') == 0:
@@ -168,10 +163,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_tags(self, tags):
         """Проверка поля с тегами."""
-        # if not tags:
-        #     raise serializers.ValidationError(
-        #         'В рецепте должен быть минимум один тег!'
-        #     )
+        if not tags:
+            raise serializers.ValidationError(
+                'В рецепте должен быть минимум один тег!'
+            )
         if len(set(tags)) != len(tags):
             raise ValidationError('Теги не могут повторяться!')
         return tags
@@ -200,17 +195,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         """Редактирование рецепта."""
-        # serializers.raise_errors_on_nested_writes(
-        #     'update', self, validated_data
-        # )
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         instance.tags.clear()
         instance.tags.set(tags)
         RecipeIngredient.objects.filter(recipe=instance).delete()
         self.add_ingredients(ingredients, instance)
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         """Добавление информации о рецепте в ответ запроса."""

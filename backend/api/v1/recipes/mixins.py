@@ -9,7 +9,7 @@ class PatchModelMixin:
         serializer = self.get_serializer(
             instance,
             data=request.data,
-            partial=True
+            partial=kwargs.pop('partial', False)
         )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
