@@ -38,13 +38,12 @@ class Command(BaseCommand):
                     )
                 if file_format == 'json':
                     data_ingredients = json.load(file)
-                ingredients_to_create = [
+                Ingredient.objects.bulk_create(
                     Ingredient(
                         name=ingredients.get('name'),
                         measurement_unit=ingredients.get('measurement_unit')
                     ) for ingredients in data_ingredients
-                ]
-                Ingredient.objects.bulk_create(ingredients_to_create)
+                )
         except FileNotFoundError as e:
             raise CommandError(
                 f'При загрузке данных произошла ошибка: {e}\n'

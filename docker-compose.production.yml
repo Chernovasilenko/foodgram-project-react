@@ -17,7 +17,6 @@ services:
   frontend:
     container_name: food-front
     image: randlex/food_front
-    command: cp -r /app/build/. /frontend_static
     volumes:
       - static:/frontend_static
 
