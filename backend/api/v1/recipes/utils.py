@@ -38,6 +38,16 @@ def delete_recipe(model, request, err_msg, recipe):
 
 def get_shopping_cart(ingredients):
     """Получить файл со списком покупок."""
+    ingredient_count = {}
+    for ingredient in ingredients:
+        key = (
+            f'{ingredient.get("ingredient__name")} '
+            f'({ingredient.get("ingredient__measurement_unit")})'
+        )
+        ingredient_count[key] = (
+            ingredient_count.get(key, 0)
+            + ingredient.get('ingredient_amount')
+        )
     pdfmetrics.registerFont(
         TTFont('DejaVuSans', 'fonts/DejaVuSans.ttf', 'UTF-8')
     )
@@ -51,13 +61,12 @@ def get_shopping_cart(ingredients):
     page.drawString(200, 800, 'Список ингредиентов')
     page.setFont('DejaVuSans', size=16)
     height = 750
-    for ingredient in ingredients:
-        page.drawString(75, height, (
-            f'{ingredient.get("ingredient__name")} - '
-            f'{ingredient.get("ingredient_amount")} '
-            f'{ingredient.get("ingredient__measurement_unit")}'
-        ))
+    for ingredient, amount in ingredient_count.items():
+        page.drawString(75, height, (f'{ingredient} - {amount}'))
         height -= 25
-    page.showPage()
+        if height == 25:
+            page.showPage()
+            height = 775
+            page.setFont('DejaVuSans', size=16)
     page.save()
     return response

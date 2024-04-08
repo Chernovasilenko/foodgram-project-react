@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from core import constants as const
@@ -69,11 +70,13 @@ class Subscribe(models.Model):
                 fields=('user', 'author'),
                 name='unique_user_author',
             ),
-            models.CheckConstraint(
-                check=~models.Q(user=models.F('author')),
-                name='no_self_sibscription'
-            ),
         )
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'
+
+    def clean(self):
+        if self.user.id == self.author.id:
+            raise ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )

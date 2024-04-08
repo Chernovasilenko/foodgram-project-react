@@ -157,12 +157,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             except Ingredient.DoesNotExist:
                 raise ValidationError('Указан несуществующий ингредиент!')
             if ingredient in ingredients_list:
-                # Я не понимаю, это фронт только такого вида ответ может
-                # прочитать, или нужно что-то в бэкенде настраивать, но
-                # у меня получилось только таким образом сделать так,
-                # чтобы сообщение на фронте выводилось
-                # Если я правильно понял доку, то этим валидатором так
-                # можно пользоваться
                 raise ValidationError(
                     [{'ingredients': ['Ингредиенты не могут повторяться!']}]
                 )
