@@ -29,6 +29,11 @@ class CustomUserViewSet(UserViewSet):
             return UserSubscribeRepresentSerializer
         return super().get_serializer_class()
 
+    def get_queryset(self):
+        if self.action == 'subscriptions':
+            return self.request.user.following.all()
+        return super().get_queryset()
+
     @action(
         detail=True,
         methods=('post',),
