@@ -91,7 +91,7 @@ class Recipe(models.Model):
         Ingredient,
         verbose_name='Ингредиенты',
         through='RecipeIngredient',
-        related_name='recipes'
+        related_name='recipes',
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
@@ -125,7 +125,7 @@ class RecipeIngredient(models.Model):
         Ingredient,
         verbose_name='Ингредиент',
         on_delete=models.CASCADE,
-        related_name='recipe_ingredients'
+        related_name='recipe_ingredients',
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
@@ -137,6 +137,12 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = 'Ингредиенты в рецептах'
         db_table = 'recipes_recipe_ingredient'
         ordering = ('id',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'ingredient',),
+                name='Не может быть два одинаковых ингредиента!',
+            ),
+        )
 
     def __str__(self):
         return (

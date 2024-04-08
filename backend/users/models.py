@@ -69,6 +69,10 @@ class Subscribe(models.Model):
                 fields=('user', 'author'),
                 name='unique_user_author',
             ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='no_self_sibscription'
+            ),
         )
 
     def __str__(self):

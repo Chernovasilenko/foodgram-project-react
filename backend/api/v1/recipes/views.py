@@ -1,11 +1,8 @@
 from django.db.models import Sum
-from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -18,7 +15,7 @@ from api.v1.recipes.serializers import (
     RecipeCreateUpdateSerializer,
     TagGetSerializer,
 )
-from api.v1.recipes.utils import RecipeHandler
+from api.v1.recipes.utils import add_recipe, delete_recipe, get_shopping_cart
 from api.v1.users.serializers import FavoriteSerializer, ShoppingCartSerializer
 from recipes.models import (
     FavoriteRecipe,
@@ -64,14 +61,21 @@ class RecipeViewSet(CreateListDestroyPatchMixin):
 
     @action(
         detail=True,
-        methods=('post', 'delete'),
+        methods=('post',),
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
         """Добавление/удаление рецепта в избранное."""
+        return add_recipe(
+            FavoriteSerializer, request, pk
+        )
+
+    @favorite.mapping.delete
+    def delete_favorite(self, request, pk):
+        """Добавление/удаление рецепта в избранное."""
         err_msg = 'Рецепта нет в избранном.'
-        return RecipeHandler().execute(
-            FavoriteSerializer, FavoriteRecipe, request, pk, err_msg
+        return delete_recipe(
+            FavoriteRecipe, request, err_msg, get_object_or_404(Recipe, id=pk)
         )
 
     @action(
@@ -81,16 +85,16 @@ class RecipeViewSet(CreateListDestroyPatchMixin):
     )
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
-        return RecipeHandler().execute(
-            ShoppingCartSerializer, ShoppingCart, request, pk
+        return add_recipe(
+            ShoppingCartSerializer, request, pk
         )
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
         err_msg = 'Рецепт отсутствует в списке покупок.'
-        return RecipeHandler().execute(
-            ShoppingCartSerializer, ShoppingCart, request, pk, err_msg
+        return delete_recipe(
+            ShoppingCart, request, err_msg, get_object_or_404(Recipe, id=pk)
         )
 
     @action(
@@ -111,25 +115,4 @@ class RecipeViewSet(CreateListDestroyPatchMixin):
             )
             .annotate(ingredient_amount=Sum('amount'))
         )
-        pdfmetrics.registerFont(
-            TTFont('DejaVuSans', 'fonts/DejaVuSans.ttf', 'UTF-8'))
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = (
-            'attachment; '
-            f'filename="shopping_list_{user.username}.pdf"'
-        )
-        page = canvas.Canvas(response)
-        page.setFont('DejaVuSans', size=24)
-        page.drawString(200, 800, 'Список ингредиентов')
-        page.setFont('DejaVuSans', size=16)
-        height = 750
-        for ingredient in ingredients:
-            page.drawString(75, height, (
-                f'{ingredient.get("ingredient__name")} - '
-                f'{ingredient.get("ingredient_amount")} '
-                f'{ingredient.get("ingredient__measurement_unit")}'
-            ))
-            height -= 25
-        page.showPage()
-        page.save()
-        return response
+        return get_shopping_cart(ingredients)

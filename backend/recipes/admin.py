@@ -39,8 +39,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'name', 'author', 'favorites_amount', 'get_img')
     search_fields = ('name', 'author')
-    list_filter = ('name', 'author', 'tags')
+    list_filter = ('name', 'author')
     list_display_links = ('name',)
+    filter_horizontal = ('tags',)
     inlines = (RecipeIngredientInline,)
 
     @admin.display(description='Добавлено в избранное')

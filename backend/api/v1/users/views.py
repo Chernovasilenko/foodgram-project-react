@@ -23,6 +23,12 @@ class CustomUserViewSet(UserViewSet):
             self.permission_classes = settings.PERMISSIONS.user_me
         return super().get_permissions()
 
+    def get_serializer_class(self):
+        """Выбор сериализатора в зависимости от запроса."""
+        if self.action == 'subscriptions':
+            return UserSubscribeRepresentSerializer
+        return super().get_serializer_class()
+
     @action(
         detail=True,
         methods=('post',),
@@ -57,16 +63,9 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=False,
-        methods=('get',),
+        url_path='subscriptions',
         permission_classes=(CurrentUserOrAdmin,)
     )
-    def subscriptions(self, request):
+    def subscriptions(self, request, *args, **kwargs):
         """Подписки пользователя."""
-        return self.get_paginated_response(UserSubscribeRepresentSerializer(
-            self.paginate_queryset(
-                User.objects.filter(following__user=request.user)
-            ),
-            many=True,
-            context={'request': request}
-        ).data
-        )
+        return self.list(request, *args, **kwargs)

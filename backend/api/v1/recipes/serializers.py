@@ -141,9 +141,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
     def validate_ingredients(self, ingredients):
-        """Проверка поля с ингридиентами."""
+        """Проверка поля с ингредиентами."""
         if not ingredients:
-            raise serializers.ValidationError(
+            raise ValidationError(
                 'В рецепте должны быть ингридиенты!'
             )
         ingredients_list = []
@@ -157,14 +157,22 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             except Ingredient.DoesNotExist:
                 raise ValidationError('Указан несуществующий ингредиент!')
             if ingredient in ingredients_list:
-                raise ValidationError('Ингредиенты не могут повторяться!')
+                # Я не понимаю, это фронт только такого вида ответ может
+                # прочитать, или нужно что-то в бэкенде настраивать, но
+                # у меня получилось только таким образом сделать так,
+                # чтобы сообщение на фронте выводилось
+                # Если я правильно понял доку, то этим валидатором так
+                # можно пользоваться
+                raise ValidationError(
+                    [{'ingredients': ['Ингредиенты не могут повторяться!']}]
+                )
             ingredients_list.append(ingredient)
         return ingredients
 
     def validate_tags(self, tags):
         """Проверка поля с тегами."""
         if not tags:
-            raise serializers.ValidationError(
+            raise ValidationError(
                 'В рецепте должен быть минимум один тег!'
             )
         if len(set(tags)) != len(tags):
@@ -191,6 +199,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags)
         self.add_ingredients(ingredients, recipe)
         return recipe
+        # return super().create(validated_data)
 
     @transaction.atomic
     def update(self, instance, validated_data):

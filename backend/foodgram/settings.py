@@ -89,6 +89,8 @@ PSQL = {
 
 DATABASES = SQLITE if os.getenv('USESQLITE', 'False') == 'True' else PSQL
 
+# AUTHENTICATION_BACKENDS = ['path.to.EmailOrUsernameModelBackend']
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -126,6 +128,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'
 
+AUTHENTICATION_BACKENDS = ['users.auth.EmailOrUsernameModelBackend']
+
 API_VER = 'v1'
 
 REST_FRAMEWORK = {
@@ -147,8 +151,8 @@ DJOSER = {
         'current_user': f'api.{API_VER}.users.serializers.UserGetSerializer',
     },
     'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
         'user': ['rest_framework.permissions.AllowAny'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
         'user_me': ['rest_framework.permissions.IsAuthenticated'],
         'set_password': ['djoser.permissions.CurrentUserOrAdmin'],
     },

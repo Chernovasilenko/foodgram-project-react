@@ -109,6 +109,12 @@ class FavoriteSerializer(serializers.ModelSerializer):
             )
         ]
 
+    # def validate_recipe(self, recipe):
+    #     try:
+    #         recipe = Recipe.objects.get(id=recipe.get('id'))
+    #     except Recipe.DoesNotExist:
+    #         raise ValidationError('Рецепт не существует!')
+
     def to_representation(self, instance):
         """Добавление краткой информации о рецепте."""
         return RecipeShortSerializer(
