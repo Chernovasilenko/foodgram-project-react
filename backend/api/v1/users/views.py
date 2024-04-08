@@ -31,7 +31,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_queryset(self):
         if self.action == 'subscriptions':
-            return self.request.user.following.all()
+            return User.objects.filter(following__user=self.request.user)
         return super().get_queryset()
 
     @action(
