@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -56,7 +55,7 @@ def get_shopping_cart(ingredients):
         'attachment; '
         'filename="shopping_list.pdf"'
     )
-    page = canvas.Canvas(response, pagesize=A4)
+    page = canvas.Canvas(response)
     page.setFont('DejaVuSans', size=24)
     page.drawString(200, 800, 'Список ингредиентов')
     page.setFont('DejaVuSans', size=16)

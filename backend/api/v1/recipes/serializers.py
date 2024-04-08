@@ -193,7 +193,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags)
         self.add_ingredients(ingredients, recipe)
         return recipe
-        # return super().create(validated_data)
 
     @transaction.atomic
     def update(self, instance, validated_data):

@@ -33,6 +33,8 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
+    """Администрирование подписок."""
+
     list_display = ('id', 'user', 'author', 'created')
     search_fields = ('user', 'author')
     list_filter = ('user', 'author')

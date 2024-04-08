@@ -30,6 +30,7 @@ class CustomUserViewSet(UserViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        """Выбор кверисета в зависимости от запроса."""
         if self.action == 'subscriptions':
             return User.objects.filter(following__user=self.request.user)
         return super().get_queryset()
