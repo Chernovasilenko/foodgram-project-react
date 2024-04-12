@@ -19,7 +19,7 @@ class TagGetSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """Сериализатор для ингридиентов."""
+    """Сериализатор для ингредиентов."""
 
     class Meta:
         model = Ingredient

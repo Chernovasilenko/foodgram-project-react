@@ -228,10 +228,3 @@ sudo systemctl reload nginx
 # Демонстрационный сайт:
 
 Сайт доступен по адресу: https://fudgram.ddns.net
-
-Данные для доступа:
-
-``` 
-Логин: admin@admin.com
-Пароль: admin
-```
